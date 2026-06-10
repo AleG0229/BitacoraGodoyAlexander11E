@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Bitácora Académica | Video + Márgenes optimizados</title>
+  <style>
+    /* ---------- RESET Y ESTILOS GLOBALES ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: rgb(65, 63, 63);
+      font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+      line-height: 1.5;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---------- HEADER (VINO + NEÓN) ---------- */
+    .page-header {
+      background-color: #5a1e2c;
+      padding: 1.2rem 2rem;
+      text-align: center;
+      border-bottom: 3px solid #c77a4a;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .page-header h1 {
+      font-size: 2.4rem;
+      letter-spacing: 1px;
+      font-weight: 700;
+      text-shadow: 0 0 5px #ffe6c7, 0 0 10px #ffb347, 0 0 15px #ff914d, 0 0 20px #ff6600;
+      color: #fff2e0;
+    }
+
+    .page-header p {
+      font-size: 1rem;
+      margin-top: 0.4rem;
+      font-style: italic;
+      color: #f5d7c1;
+    }
+
+    /* ---------- MAIN: más ancho, márgenes reducidos ---------- */
+    .main-content {
+      flex: 1;
+      max-width: 1200px;
+      width: 94%;
+      margin: 1.5rem auto;
+    }
+
+    /* Columna única, separación entre tarjetas reducida */
+    .bitacora-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Tarjeta */
+    .card {
+      background: #2e2b2b;
+      border-radius: 1.2rem;
+      overflow: hidden;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      transition: transform 0.25s ease, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Contenedor de imagen estándar */
+    .card-img {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      background-color: #1f1e1e;
+    }
+
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    .card-img img:hover {
+      transform: scale(1.05);
+    }
+
+    /* --- Contenedor especial para VIDEO: doble ancho visual (altura más grande) --- */
+    .card-video {
+      width: 100%;
+      background: #0a0a0a;
+      overflow: hidden;
+    }
+
+    /* El video ocupa todo el ancho y tiene una altura destacada (doble respecto a imagen típica) */
+    .responsive-video {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #000;
+      /* Altura base: 380px en desktop (casi el doble de 200px) */
+      min-height: 380px;
+      object-fit: cover;
+      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    /* Efecto de zoom suave AL PASAR MOUSE sobre el video (igual que las imágenes) */
+    .card-video:hover .responsive-video {
+      transform: scale(1.02);
+    }
+
+    /* Ajuste para que el contenedor no corte el zoom */
+    .card-video {
+      overflow: hidden;
+    }
+
+    /* Contenedor del PDF (tarjeta Flexbox) */
+    .pdf-preview-container {
+      width: 100%;
+      background: #1f1c1c;
+      margin: 0;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255, 215, 150, 0.15);
+    }
+
+    .pdf-embed {
+      width: 100%;
+      height: 260px;
+      border: none;
+      display: block;
+      background: #f4f4f4;
+    }
+
+    .pdf-label {
+      font-size: 0.7rem;
+      text-align: center;
+      padding: 0.3rem 0.5rem;
+      background: #232020;
+      color: #cbd5e1;
+      letter-spacing: 0.2px;
+    }
+
+    /* Área de texto de la tarjeta: padding reducido */
+    .card-info {
+      padding: 0.9rem 1rem 1rem 1rem;
+    }
+
+    .card-info h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #ffcd94;
+      margin-bottom: 0.3rem;
+      border-left: 4px solid #df7a42;
+      padding-left: 0.7rem;
+    }
+
+    .fecha {
+      font-size: 0.75rem;
+      font-family: monospace;
+      background: rgba(255, 165, 80, 0.2);
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 30px;
+      color: #ffbc7a;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-info p {
+      color: #e0e0e0;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    /* Feedback area */
+    .feedback-area {
+      background-color: #262424;
+      border-radius: 60px;
+      padding: 0.6rem 1.2rem;
+      text-align: center;
+      margin-top: 1.8rem;
+      font-size: 0.85rem;
+      border-left: 4px solid #2dd4bf;
+      font-weight: 500;
+    }
+
+    .feedback-area span {
+      color: #5eead4;
+      font-weight: bold;
+      background: rgba(45, 212, 191, 0.15);
+      padding: 0.2rem 0.5rem;
+      border-radius: 50px;
+    }
+
+    /* ---------- FOOTER (Turquesa, space-between) ---------- */
+    .page-footer {
+      background-color: #14b8a6;
+      color: #1a2f2c;
+      padding: 0.8rem 1.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      font-weight: 500;
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer-text p:first-child {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .footer-text small {
+      font-size: 0.7rem;
+      opacity: 0.85;
+    }
+
+    .footer-img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+      background-color: #fee3c0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+
+    .footer-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    .footer-img img:hover {
+      transform: scale(1.05);
+    }
+
+    /* Responsive: Footer columna en <600px y video se adapta */
+    @media (max-width: 600px) {
+      .page-footer {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        gap: 0.8rem;
+        padding: 1rem;
+      }
+      .footer-text {
+        align-items: center;
+      }
+      .footer-img {
+        width: 70px;
+        height: 70px;
+      }
+      .pdf-embed {
+        height: 200px;
+      }
+      .main-content {
+        width: 96%;
+        margin: 1rem auto;
+      }
+      /* Reducimos altura del video en móviles pero sigue siendo grande */
+      .responsive-video {
+        min-height: 240px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card-info h3 {
+        font-size: 1.3rem;
+      }
+      .pdf-embed {
+        height: 180px;
+      }
+      .card-img {
+        height: 170px;
+      }
+      .responsive-video {
+        min-height: 200px;
+      }
+    }
+
+    /* Para tablets el video se ve bien */
+    @media (min-width: 601px) and (max-width: 900px) {
+      .pdf-embed {
+        height: 280px;
+      }
+      .responsive-video {
+        min-height: 320px;
+      }
+    }
+
+    /* Interactividad */
+    .card-img img, .footer-img img, .responsive-video {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <h1>📘 Bitácora Académica</h1>
+    <p>Márgenes reducidos · Una columna · Video interactivo + PDF preview</p>
+  </header>
+
+  <main class="main-content">
+    <div class="bitacora-stack">
+      
+      <!-- Tarjeta 1: Fundamentos de Flexbox + PDF preview -->
+      <article class="card">
+        <div class="card-info">
+          <h3>⚡ Introducción Arduino</h3>
+          <div class="fecha">📅 12 de abril, 2025 · Material práctico</div>
+          <p>Alineación, justify-content, flex-wrap y más. Vista previa del documento oficial (PDF demostrativo).</p>
+        </div>
+        <div class="pdf-preview-container">
+          <embed class="pdf-embed" 
+                src="RECURSOS/DyT Guia del estudiante (1).pdf" 
+                type="application/pdf"
+                title="Vista previa PDF - Flexbox">
+          <div class="pdf-label">📄 Vista previa: "Guía esencial de Flexbox" (ejemplo académico)</div>
+        </div>
+        <div class="card-info" style="padding-top: 0.4rem;">
+          <p>✅ Práctica: Header responsivo, cajas flexibles y comprensión del modelo de ejes.</p>
+        </div>
+      </article>
+      
+      <!-- Tarjeta 2: Media Queries + Mobile First con VIDEO (ancho doble) -->
+      <article class="card">
+        <!-- Contenedor de video con efecto hover zoom (igual que imágenes) -->
+        <div class="card-video">
+          <video class="responsive-video" controls poster="https://picsum.photos/id/26/800/450" preload="metadata">
+            <!-- Video de muestra (formato MP4, código abierto, corto y representativo sobre diseño responsive) -->
+            <source src="RECURSOS/video/Semana2.mp4" type="video/mp4">
+            Tu navegador no soporta la etiqueta de video. 
+          </video>
+        </div>
+        <div class="card-info">
+          <h3>📱 Introduccion a Robotica</h3>
+          <div class="fecha">📅 18 de abril, 2025 · Video demostrativo</div>
+          <p>Listado de materiales: Arduino UNO R3, Resistencias....
+          </p>
+          <p style="margin-top: 0.3rem;">🎥 El video contiene la simulacion de mi proyecto realizado en thinkercad</p>
+        </div>
+      </article>
+      
+      <!-- Tarjeta 3: Efectos visuales y transiciones -->
+      <article class="card">
+        <div class="card-img">
+          <img src="https://picsum.photos/id/0/800/300" alt="CSS moderno con efectos hover" loading="lazy">
+        </div>
+        <div class="card-info">
+          <h3>✨ Efectos visuales & Transiciones</h3>
+          <div class="fecha">📅 25 de abril, 2025</div>
+          <p>Zoom suave (transform: scale) en imágenes, text-shadow neón y microinteracciones que mejoran la UX.</p>
+        </div>
+      </article>
+
+      <!-- Tarjeta 4: JavaScript Interactivo -->
+      <article class="card">
+        <div class="card-img">
+          <img src="https://picsum.photos/id/20/800/300" alt="Código JS y manipulación del DOM" loading="lazy">
+        </div>
+        <div class="card-info">
+          <h3>📌 JavaScript + Eventos</h3>
+          <div class="fecha">📅 28 de abril, 2025</div>
+          <p>Haz clic en cualquier imagen o en el video, y verás un mensaje dinámico en el panel inferior.</p>
+        </div>
+      </article>
+    </div>
+
+    <!-- Feedback dinámico para clicks en imágenes y video -->
+    <div class="feedback-area" id="jsFeedback">
+      📍 <strong>Interacción:</strong> Clic en imagen o video →
+      <span id="clickMessage">Ningún elemento seleccionado aún</span>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <div class="footer-text">
+      <p>© 2025 · Bitácora Académica · Front-end Dev</p>
+      <small>📖 Márgenes optimizados · Una columna · Video + PDF incluidos</small>
+    </div>
+    <div class="footer-img">
+      <img src="https://picsum.photos/id/169/100/100" alt="Icono libreta académica - footer" loading="lazy">
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      document.addEventListener('DOMContentLoaded', function() {
+        // Seleccionar todas las imágenes y también el elemento de video (para que tenga el mismo efecto de click)
+        const cardImages = document.querySelectorAll('.card-img img');
+        const footerImg = document.querySelectorAll('.footer-img img');
+        const videoElement = document.querySelector('.responsive-video');  // El video de la tarjeta Media Queries
+        
+        // Colección final de elementos clickeables
+        let clickableElements = [...cardImages, ...footerImg];
+        if (videoElement) {
+          clickableElements.push(videoElement);
+        }
+        
+        const messageSpan = document.getElementById('clickMessage');
+        
+        function handleClick(event) {
+          const element = event.currentTarget;
+          let description = '';
+          
+          // Determinar si es video o imagen
+          if (element.tagName === 'VIDEO') {
+            description = '🎬 Video demostrativo: "Media Queries + Mobile First" (contenido interactivo)';
+          } else {
+            description = element.getAttribute('alt') || '';
+            if (!description.trim()) {
+              description = `Imagen (${element.src.split('/').pop().substring(0, 20)})`;
+            }
+          }
+          
+          let context = '';
+          if (element.closest('.page-footer')) {
+            context = '🎓 Footer - ';
+          } else if (element.closest('.card')) {
+            const titleElem = element.closest('.card')?.querySelector('h3');
+            const cardTitle = titleElem ? titleElem.innerText : 'entrada';
+            context = `📘 [${cardTitle}] → `;
+          }
+          
+          const finalMsg = `${context}${description}`;
+          if (messageSpan) {
+            messageSpan.textContent = finalMsg;
+            const feedbackDiv = document.getElementById('jsFeedback');
+            if (feedbackDiv) {
+              feedbackDiv.style.backgroundColor = '#3a3636';
+              setTimeout(() => { feedbackDiv.style.backgroundColor = '#262424'; }, 200);
+            }
+          }
+        }
+        
+        // Asignar evento click a cada elemento
+        clickableElements.forEach(el => {
+          el.removeEventListener('click', handleClick);
+          el.addEventListener('click', handleClick);
+          el.style.cursor = 'pointer';
+          if (el.tagName !== 'VIDEO') {
+            el.setAttribute('title', 'Clic para ver detalles en el panel');
+          } else {
+            el.setAttribute('title', 'Clic en el video para interacción');
+          }
+        });
+        
+        // Efecto hover zoom para el video ya está en CSS, pero aseguramos que también tenga el efecto scale.
+        console.log('✅ Bitácora actualizada: video con zoom suave y doble altura, márgenes compactos, responsive');
+      });
+    })();
+  </script>
+</body>
+</html>
